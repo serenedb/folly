@@ -263,7 +263,7 @@ target_link_libraries(folly
   PUBLIC glog::glog
   PRIVATE FastFloat::fast_float
   PRIVATE absl::strings
-  PRIVATE double-conversion::double-conversion
+  PUBLIC double-conversion::double-conversion
   PRIVATE folly_avx512
 )
 add_library(Folly::folly ALIAS folly)
