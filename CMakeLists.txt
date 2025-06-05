@@ -139,6 +139,15 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/folly/folly-config.h
 )
 
+add_library(folly_target_specific INTERFACE)
+
+add_library(folly_avx2 STATIC
+  folly/external/fast-crc32/sse_crc32c_v8s3x3.cpp
+)
+target_include_directories(folly_avx2 SYSTEM
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 add_library(folly_avx512 STATIC
   folly/external/fast-crc32/avx512_crc32c_v8s3x4.cpp
   folly/detail/TrapOnAvx512.cpp
@@ -152,15 +161,11 @@ target_compile_options(folly_avx512 PRIVATE
   -mpclmul
 )
 
-#[[ TODO(mbkkt) arm detection
 add_library(folly_neon1 STATIC
   folly/external/fast-crc32/neon_crc32c_v3s4x2e_v2.cpp
 )
 target_include_directories(folly_neon1 SYSTEM
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-)
-target_compile_options(folly_neon1 PRIVATE
-  -march=armv8-a+crypto+crc
 )
 
 add_library(folly_neon2 STATIC
@@ -172,11 +177,8 @@ target_include_directories(folly_neon2 SYSTEM
 target_compile_options(folly_neon2 PRIVATE
   -march=armv8.2-a+crypto+crc+sha3
 )
-]]
 
 add_library(folly STATIC
-  folly/external/fast-crc32/sse_crc32c_v8s3x3.cpp
-
   # for velox
   folly/io/IOBuf.cpp
   folly/Random.cpp
@@ -230,10 +232,6 @@ add_library(folly STATIC
   folly/detail/UniqueInstance.cpp
   folly/FileUtil.cpp
   folly/Format.cpp
-  folly/hash/Checksum.cpp
-  folly/hash/detail/ChecksumDetail.cpp
-  folly/hash/detail/Crc32cDetail.cpp
-  folly/hash/detail/Crc32CombineDetail.cpp
   folly/hash/SpookyHashV2.cpp
   folly/lang/CString.cpp
   folly/lang/Exception.cpp
@@ -256,6 +254,12 @@ add_library(folly STATIC
   folly/system/ThreadId.cpp
   folly/String.cpp
   folly/tracing/AsyncStack.cpp
+
+  # folly crc32 and crc32c
+  # folly/hash/Checksum.cpp
+  # folly/hash/detail/ChecksumDetail.cpp
+  # folly/hash/detail/Crc32cDetail.cpp
+  # folly/hash/detail/Crc32CombineDetail.cpp
 )
 target_include_directories(folly SYSTEM
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
@@ -267,7 +271,7 @@ target_link_libraries(folly
   PRIVATE FastFloat::fast_float
   PRIVATE absl::strings
   PUBLIC double-conversion::double-conversion
-  PRIVATE folly_avx512
+  PRIVATE folly_target_specific
 )
 add_library(Folly::folly ALIAS folly)
 
