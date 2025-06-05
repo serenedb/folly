@@ -223,6 +223,9 @@ add_library(folly STATIC
   folly/detail/SplitStringSimd.cpp
   folly/detail/StaticSingletonManager.cpp
   folly/detail/ThreadLocalDetail.cpp
+  folly/synchronization/SanitizeThread.cpp
+  folly/memory/SanitizeLeak.cpp
+  folly/memory/SanitizeAddress.cpp
   folly/detail/thread_local_globals.cpp
   folly/detail/UniqueInstance.cpp
   folly/FileUtil.cpp
