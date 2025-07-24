@@ -254,7 +254,15 @@ add_library(folly STATIC
   folly/system/ThreadId.cpp
   folly/String.cpp
   folly/tracing/AsyncStack.cpp
-
+  folly/ssl/OpenSSLHash.cpp
+  
+  # For functions that parse addresses
+  folly/MacAddress.cpp
+  folly/detail/IPAddress.cpp
+  folly/IPAddress.cpp
+  folly/IPAddressV4.cpp
+  folly/IPAddressV6.cpp
+  
   # folly crc32 and crc32c
   # folly/hash/Checksum.cpp
   # folly/hash/detail/ChecksumDetail.cpp
