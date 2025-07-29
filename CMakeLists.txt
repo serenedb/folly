@@ -263,11 +263,10 @@ add_library(folly STATIC
   folly/IPAddressV4.cpp
   folly/IPAddressV6.cpp
   
-  # folly crc32 and crc32c
-  # folly/hash/Checksum.cpp
-  # folly/hash/detail/ChecksumDetail.cpp
-  # folly/hash/detail/Crc32cDetail.cpp
-  # folly/hash/detail/Crc32CombineDetail.cpp
+  # crc32 and crc32c
+  folly/hash/Checksum.cpp
+  folly/hash/detail/ChecksumDetail.cpp
+  folly/hash/detail/Crc32CombineDetail.cpp
 )
 target_include_directories(folly SYSTEM
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
