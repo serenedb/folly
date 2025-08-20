@@ -267,6 +267,12 @@ add_library(folly STATIC
   folly/hash/Checksum.cpp
   folly/hash/detail/ChecksumDetail.cpp
   folly/hash/detail/Crc32CombineDetail.cpp
+
+  # CPUThreadPoolExecutor
+  folly/executors/QueueObserver.cpp
+  folly/executors/GlobalThreadPoolList.cpp
+  folly/executors/ThreadPoolExecutor.cpp
+  folly/executors/CPUThreadPoolExecutor.cpp
 )
 target_include_directories(folly SYSTEM
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
