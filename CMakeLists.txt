@@ -145,12 +145,179 @@ else()
 endif()
 include(FollyFunctions)
 
-include(folly-deps) # Find the required packages
+#include(folly-deps) # Find the required packages
 include(FollyConfigChecks)
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/CMake/folly-config.h.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
 )
+
+add_library(folly_target_specific INTERFACE)
+
+add_library(folly_avx2 STATIC
+  folly/external/fast-crc32/sse_crc32c_v8s3x3.cpp
+)
+target_include_directories(folly_avx2 SYSTEM
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_library(folly_avx512 STATIC
+  folly/external/fast-crc32/avx512_crc32c_v8s3x4.cpp
+  folly/detail/TrapOnAvx512.cpp
+)
+target_include_directories(folly_avx512 SYSTEM
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_compile_options(folly_avx512 PRIVATE
+  -mavx512f
+  -mavx512vl
+  -mpclmul
+)
+
+add_library(folly_neon1 STATIC
+  folly/external/fast-crc32/neon_crc32c_v3s4x2e_v2.cpp
+)
+target_include_directories(folly_neon1 SYSTEM
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_library(folly_neon2 STATIC
+  folly/external/fast-crc32/neon_eor3_crc32c_v8s2x4_s3.cpp
+)
+target_include_directories(folly_neon2 SYSTEM
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_compile_options(folly_neon2 PRIVATE
+  -march=armv8.2-a+crypto+crc+sha3
+)
+
+add_library(folly STATIC
+  # For Velox compression
+  folly/compression/Compression.cpp
+
+  # For IOBufQueue
+  folly/io/IOBufQueue.cpp
+
+  # For IOBuf
+  folly/memory/SanitizeAddress.cpp
+  folly/io/IOBuf.cpp
+
+  # For Try
+  folly/ExceptionWrapper.cpp
+  folly/Try.cpp
+
+  # For futures, executors, concurrency
+  folly/concurrency/CacheLocality.cpp
+  folly/detail/AsyncTrace.cpp
+  folly/detail/Futex.cpp
+  folly/detail/MemoryIdler.cpp
+  folly/memory/MallctlHelper.cpp
+  folly/portability/SysMembarrier.cpp
+  folly/synchronization/AsymmetricThreadFence.cpp
+  folly/system/ThreadId.cpp
+  folly/system/Pid.cpp
+
+  # For singleton and velox/common/caching
+  folly/detail/StaticSingletonManager.cpp
+  folly/detail/thread_local_globals.cpp
+  folly/detail/ThreadLocalDetail.cpp
+  folly/detail/UniqueInstance.cpp
+  folly/lang/CString.cpp
+  folly/memory/SanitizeLeak.cpp
+  folly/memory/ReentrantAllocator.cpp
+  folly/SingletonThreadLocal.cpp
+  folly/synchronization/SanitizeThread.cpp
+  folly/Demangle.cpp
+  folly/Singleton.cpp
+  folly/SharedMutex.cpp
+
+  # For futures
+  folly/futures/detail/Core.cpp
+  folly/futures/Future.cpp
+  folly/futures/HeapTimekeeper.cpp
+  folly/system/ThreadName.cpp
+
+  # For request (For executor)
+  folly/synchronization/Hazptr.cpp
+  folly/synchronization/HazptrDomain.cpp
+  folly/io/async/Request.cpp
+
+  # For executor
+  folly/executors/InlineExecutor.cpp
+  folly/executors/QueuedImmediateExecutor.cpp
+  folly/Executor.cpp
+  folly/synchronization/ParkingLot.cpp
+  folly/synchronization/AtomicNotification.cpp
+  folly/synchronization/DistributedMutex.cpp
+
+  # For CPUThreadPoolExecutor
+  folly/concurrency/ProcessLocalUniqueId.cpp
+  folly/executors/QueueObserver.cpp
+  folly/executors/GlobalThreadPoolList.cpp
+  folly/executors/ThreadPoolExecutor.cpp
+  folly/executors/CPUThreadPoolExecutor.cpp
+
+  # For json
+  folly/json/dynamic.cpp
+  folly/json/json.cpp
+  folly/json/json_pointer.cpp
+  folly/Unicode.cpp
+
+  # For functions that parse addresses
+  folly/detail/IPAddress.cpp
+  folly/MacAddress.cpp
+  folly/IPAddress.cpp
+  folly/IPAddressV4.cpp
+  folly/IPAddressV6.cpp
+  
+  # For crc32 and crc32c
+  folly/hash/Checksum.cpp
+  folly/hash/detail/ChecksumDetail.cpp
+  folly/hash/detail/Crc32CombineDetail.cpp
+
+  # For velox/common/process
+  folly/detail/FileUtilDetail.cpp
+  folly/net/NetOps.cpp
+  folly/FileUtil.cpp
+  folly/debugging/symbolizer/StackTrace.cpp
+  folly/tracing/AsyncStack.cpp
+  folly/debugging/symbolizer/SignalHandler.cpp
+
+  # For coroutine
+  folly/coro/detail/Malloc.cpp
+  folly/memory/Malloc.cpp
+
+  # For everything else
+  folly/container/detail/F14Table.cpp
+  folly/hash/SpookyHashV2.cpp
+  folly/lang/Exception.cpp
+  folly/lang/SafeAssert.cpp
+  folly/lang/ToAscii.cpp
+  folly/system/AtFork.cpp
+  folly/ssl/OpenSSLHash.cpp
+  folly/CancellationToken.cpp
+  folly/Conv.cpp
+  folly/Format.cpp
+  folly/Random.cpp
+  folly/ScopeGuard.cpp
+  folly/String.cpp
+)
+target_include_directories(folly SYSTEM
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+  PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
+)
+target_link_libraries(folly
+  PUBLIC Boost::headers
+  PUBLIC gflags::gflags
+  PUBLIC glog::glog
+  PUBLIC FastFloat::fast_float
+  PUBLIC fmt::fmt
+  PUBLIC double-conversion::double-conversion
+  PRIVATE folly_target_specific
+)
+add_library(Folly::folly ALIAS folly)
+
+return()
 
 # Define FOLLY_XLOG_STRIP_PREFIXES when compiling our sources so that
 # folly/logging will automatically choose the correct log category names,
