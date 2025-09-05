@@ -20,7 +20,6 @@
 #include <folly/Synchronized.h>
 #include <folly/coro/Task.h>
 #include <folly/coro/Timeout.h>
-#include <folly/fibers/Baton.h>
 #include <folly/futures/Future.h>
 
 #include <deque>
@@ -60,7 +59,7 @@ class Semaphore {
     Waiter() noexcept {}
 
     // The baton will be signalled when this waiter acquires the semaphore.
-    Baton baton;
+    Baton<> baton;
 
    private:
     friend Semaphore;
