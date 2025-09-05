@@ -26,7 +26,6 @@
 #include <folly/coro/detail/Traits.h>
 #include <folly/executors/ManualExecutor.h>
 #include <folly/executors/SequencedExecutor.h>
-#include <folly/fibers/Baton.h>
 #include <folly/lang/MustUseImmediately.h>
 #include <folly/synchronization/Baton.h>
 #include <folly/tracing/AsyncStack.h>
@@ -86,7 +85,7 @@ class BlockingWaitPromiseBase {
   folly::AsyncStackFrame& getAsyncFrame() noexcept { return asyncFrame_; }
 
  private:
-  folly::fibers::Baton baton_;
+  folly::Baton<> baton_;
   folly::AsyncStackFrame asyncFrame_;
 };
 
@@ -300,7 +299,7 @@ class BlockingWaitExecutor final
     baton_.wait();
     baton_.reset();
 
-    folly::fibers::runInMainContext([&]() {
+    std::invoke([&]() {
       std::deque<BlockingWaitTaskInfo> infos;
       queue_.swap(infos);
       RequestContextSaverScopeGuard guard;
@@ -346,7 +345,7 @@ class BlockingWaitExecutor final
   };
 
   folly::Synchronized<std::deque<BlockingWaitTaskInfo>> queue_;
-  fibers::Baton baton_;
+  Baton<> baton_;
 
   std::atomic<ssize_t> keepAliveCount_{0};
 };
