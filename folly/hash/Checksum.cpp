@@ -81,9 +81,10 @@ bool crc32c_hw_supported_sse42() {
 }
 
 bool crc32c_hw_supported_avx512() {
-  static folly::CpuId id;
-  static bool supported = id.avx512vl() && !detail::hasTrapOnAvx512();
-  return supported;
+  // static folly::CpuId id;
+  // static bool supported = id.avx512vl() && !detail::hasTrapOnAvx512();
+  // return supported;
+  return false;
 }
 
 bool crc32_hw_supported() {
@@ -212,6 +213,7 @@ uint32_t crc32_sw(
 
 } // namespace detail
 
+/*
 uint32_t crc32c(const uint8_t* data, size_t nbytes, uint32_t startingChecksum) {
 #if defined(FOLLY_ENABLE_AVX512_CRC32C_V8S3X4)
   if (detail::crc32c_hw_supported_avx512() && nbytes > 4096) {
@@ -240,6 +242,7 @@ uint32_t crc32c(const uint8_t* data, size_t nbytes, uint32_t startingChecksum) {
     return detail::crc32c_sw(data, nbytes, startingChecksum);
   }
 }
+*/
 
 uint32_t crc32(const uint8_t* data, size_t nbytes, uint32_t startingChecksum) {
 #if FOLLY_AARCH64
@@ -275,6 +278,7 @@ uint32_t crc32_combine(uint32_t crc1, uint32_t crc2, size_t crc2len) {
   }
 }
 
+/*
 uint32_t crc32c_combine(uint32_t crc1, uint32_t crc2, size_t crc2len) {
   // Append up to 32 bits of zeroes in the normal way
   uint8_t data[4] = {0, 0, 0, 0};
@@ -289,5 +293,6 @@ uint32_t crc32c_combine(uint32_t crc1, uint32_t crc2, size_t crc2len) {
     return detail::crc32c_combine_sw(crc1, crc2, crc2len - len);
   }
 }
+*/
 
 } // namespace folly
