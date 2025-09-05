@@ -42,7 +42,7 @@ class Timekeeper;
 
 namespace futures {
 namespace detail {
-typedef folly::fibers::Baton FutureBatonType;
+typedef Baton<> FutureBatonType;
 } // namespace detail
 } // namespace futures
 
@@ -482,7 +482,7 @@ class WaitExecutor final : public folly::Executor {
   void drive() {
     baton_.wait();
 
-    fibers::runInMainContext([&]() {
+    std::invoke([&]() {
       baton_.reset();
       auto funcs = std::move(queue_.wlock()->funcs);
       for (auto& func : funcs) {
@@ -497,7 +497,7 @@ class WaitExecutor final : public folly::Executor {
     if (!baton_.try_wait_until(deadline)) {
       return false;
     }
-    return fibers::runInMainContext([&]() {
+    return std::invoke([&]() {
       baton_.reset();
       auto funcs = std::move(queue_.wlock()->funcs);
       for (auto& func : funcs) {
