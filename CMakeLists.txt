@@ -255,6 +255,7 @@ add_library(folly STATIC
   folly/String.cpp
   folly/tracing/AsyncStack.cpp
   folly/ssl/OpenSSLHash.cpp
+  folly/io/IOBufQueue.cpp
   
   # For functions that parse addresses
   folly/MacAddress.cpp
