@@ -187,100 +187,109 @@ target_compile_options(folly_neon2 PRIVATE
 )
 
 add_library(folly STATIC
-  # for velox
-  folly/io/IOBuf.cpp
-  folly/Random.cpp
-
-  # for velox compression
+  # For Velox compression
   folly/compression/Compression.cpp
 
-  # for futures
+  # For IOBuf
+  folly/memory/SanitizeAddress.cpp
+  folly/io/IOBuf.cpp
+
+  # For Try
+  folly/ExceptionWrapper.cpp
+  folly/Try.cpp
+
+  # For futures, executors, concurrency
+  folly/concurrency/CacheLocality.cpp
+  folly/detail/AsyncTrace.cpp
+  folly/detail/Futex.cpp
+  folly/detail/MemoryIdler.cpp
+  folly/memory/MallctlHelper.cpp
+  folly/portability/SysMembarrier.cpp
+  folly/synchronization/AsymmetricThreadFence.cpp
+  folly/system/ThreadId.cpp
+  folly/system/Pid.cpp
+
+  # For singleton and velox/common/caching
+  folly/detail/StaticSingletonManager.cpp
+  folly/detail/thread_local_globals.cpp
+  folly/detail/ThreadLocalDetail.cpp
+  folly/detail/UniqueInstance.cpp
+  folly/lang/CString.cpp
+  folly/memory/SanitizeLeak.cpp
+  folly/memory/ReentrantAllocator.cpp
+  folly/SingletonThreadLocal.cpp
+  folly/synchronization/SanitizeThread.cpp
+  folly/Demangle.cpp
+  folly/Singleton.cpp
+  folly/SharedMutex.cpp
+
+  # For futures
   folly/futures/detail/Core.cpp
   folly/futures/Future.cpp
   folly/futures/HeapTimekeeper.cpp
-  folly/synchronization/DistributedMutex.cpp
-  folly/Try.cpp
-  folly/synchronization/AtomicNotification.cpp
   folly/system/ThreadName.cpp
 
-  # for executor
+  # For request (For executor)
+  folly/synchronization/Hazptr.cpp
+  folly/synchronization/HazptrDomain.cpp
   folly/io/async/Request.cpp
-  folly/Executor.cpp
+
+  # For executor
   folly/executors/InlineExecutor.cpp
   folly/executors/QueuedImmediateExecutor.cpp
+  folly/Executor.cpp
+  folly/synchronization/ParkingLot.cpp
+  folly/synchronization/AtomicNotification.cpp
+  folly/synchronization/DistributedMutex.cpp
 
-  # for json
+  # For CPUThreadPoolExecutor
+  folly/concurrency/ProcessLocalUniqueId.cpp
+  folly/executors/QueueObserver.cpp
+  folly/executors/GlobalThreadPoolList.cpp
+  folly/executors/ThreadPoolExecutor.cpp
+  folly/executors/CPUThreadPoolExecutor.cpp
+
+  # For json
   folly/json/dynamic.cpp
   folly/json/json.cpp
   folly/json/json_pointer.cpp
   folly/Unicode.cpp
 
-  # everything else
-  folly/ExceptionString.cpp
-  folly/ExceptionWrapper.cpp
-  folly/CancellationToken.cpp
-  folly/concurrency/CacheLocality.cpp
-  folly/concurrency/ProcessLocalUniqueId.cpp
-  folly/container/detail/F14Table.cpp
-  folly/Conv.cpp
-  folly/debugging/symbolizer/SignalHandler.cpp
-  folly/debugging/symbolizer/StackTrace.cpp
-  folly/Demangle.cpp
-  folly/detail/AsyncTrace.cpp
-  folly/detail/FileUtilDetail.cpp
-  folly/detail/Futex.cpp
-  folly/detail/MemoryIdler.cpp
-  folly/detail/SplitStringSimd.cpp
-  folly/detail/StaticSingletonManager.cpp
-  folly/detail/ThreadLocalDetail.cpp
-  folly/synchronization/SanitizeThread.cpp
-  folly/memory/SanitizeLeak.cpp
-  folly/memory/SanitizeAddress.cpp
-  folly/detail/thread_local_globals.cpp
-  folly/detail/UniqueInstance.cpp
-  folly/FileUtil.cpp
-  folly/Format.cpp
-  folly/hash/SpookyHashV2.cpp
-  folly/lang/CString.cpp
-  folly/lang/Exception.cpp
-  folly/lang/SafeAssert.cpp
-  folly/lang/ToAscii.cpp
-  folly/memory/MallctlHelper.cpp
-  folly/memory/ReentrantAllocator.cpp
-  folly/net/NetOps.cpp
-  folly/portability/SysMembarrier.cpp
-  folly/ScopeGuard.cpp
-  folly/SharedMutex.cpp
-  folly/Singleton.cpp
-  folly/SingletonThreadLocal.cpp
-  folly/synchronization/AsymmetricThreadFence.cpp
-  folly/synchronization/Hazptr.cpp
-  folly/synchronization/HazptrDomain.cpp
-  folly/synchronization/ParkingLot.cpp
-  folly/system/AtFork.cpp
-  folly/system/Pid.cpp
-  folly/system/ThreadId.cpp
-  folly/String.cpp
-  folly/tracing/AsyncStack.cpp
-  folly/ssl/OpenSSLHash.cpp
-  
   # For functions that parse addresses
-  folly/MacAddress.cpp
   folly/detail/IPAddress.cpp
+  folly/MacAddress.cpp
   folly/IPAddress.cpp
   folly/IPAddressV4.cpp
   folly/IPAddressV6.cpp
   
-  # crc32 and crc32c
+  # For crc32 and crc32c
   folly/hash/Checksum.cpp
   folly/hash/detail/ChecksumDetail.cpp
   folly/hash/detail/Crc32CombineDetail.cpp
 
-  # CPUThreadPoolExecutor
-  folly/executors/QueueObserver.cpp
-  folly/executors/GlobalThreadPoolList.cpp
-  folly/executors/ThreadPoolExecutor.cpp
-  folly/executors/CPUThreadPoolExecutor.cpp
+  # For velox/common/process
+  folly/detail/FileUtilDetail.cpp
+  folly/net/NetOps.cpp
+  folly/FileUtil.cpp
+  folly/debugging/symbolizer/StackTrace.cpp
+  folly/tracing/AsyncStack.cpp
+  folly/debugging/symbolizer/SignalHandler.cpp
+
+  # For everything else
+  folly/container/detail/F14Table.cpp
+  folly/detail/SplitStringSimd.cpp
+  folly/hash/SpookyHashV2.cpp
+  folly/lang/Exception.cpp
+  folly/lang/SafeAssert.cpp
+  folly/lang/ToAscii.cpp
+  folly/system/AtFork.cpp
+  folly/ssl/OpenSSLHash.cpp
+  folly/CancellationToken.cpp
+  folly/Conv.cpp
+  folly/Format.cpp
+  folly/Random.cpp
+  folly/ScopeGuard.cpp
+  folly/String.cpp
 )
 target_include_directories(folly SYSTEM
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
