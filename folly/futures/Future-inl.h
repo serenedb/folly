@@ -20,6 +20,7 @@
 #include <atomic>
 #include <cassert>
 #include <chrono>
+#include <deque>
 #include <thread>
 #include <type_traits>
 #include <utility>
@@ -539,7 +540,7 @@ class WaitExecutor final : public folly::Executor {
   }
 
   struct Queue {
-    std::vector<Func> funcs;
+    std::deque<Func> funcs;
     bool detached{false};
   };
 
@@ -612,6 +613,14 @@ template <class T, class E>
 std::enable_if_t<std::is_base_of_v<std::exception, decay_t<E>>, SemiFuture<T>>
 makeSemiFuture(E&& e) {
   return makeSemiFuture(Try<T>(make_exception_wrapper<E>(std::forward<E>(e))));
+}
+
+// DEPRECATED const-ref overload for users who EXPLICITLY specify BOTH template
+// parameters
+template <class T, class E>
+std::enable_if_t<std::is_base_of_v<std::exception, E>, SemiFuture<T>>
+makeSemiFuture(const folly::type_identity_t<E>& e) {
+  return makeSemiFuture(Try<T>(make_exception_wrapper<E>(e)));
 }
 
 template <class T>
@@ -1372,6 +1381,14 @@ template <class T, class E>
 std::enable_if_t<std::is_base_of_v<std::exception, decay_t<E>>, Future<T>>
 makeFuture(E&& e) {
   return makeFuture(Try<T>(make_exception_wrapper<E>(std::forward<E>(e))));
+}
+
+// DEPRECATED const-ref overload for users who EXPLICITLY specify BOTH template
+// parameters
+template <class T, class E>
+std::enable_if_t<std::is_base_of_v<std::exception, E>, Future<T>> makeFuture(
+    const folly::type_identity_t<E>& e) {
+  return makeFuture(Try<T>(make_exception_wrapper<E>(e)));
 }
 
 template <class T>

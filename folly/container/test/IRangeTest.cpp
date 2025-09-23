@@ -14,10 +14,38 @@
  * limitations under the License.
  */
 
-#include <folly/synchronization/WaitOptions.h>
+#include <folly/container/irange.h>
 
-namespace folly {
+#include <gtest/gtest.h>
 
-//
+TEST(IRangeTest, SingleArg) {
+  int sum = 0;
+  for (const auto i : folly::irange(10)) {
+    sum += i;
+  }
+  EXPECT_EQ(sum, 45);
+}
 
-} // namespace folly
+TEST(IRangeTest, TwoArg) {
+  int sum = 0;
+  for (const auto i : folly::irange(4, 10)) {
+    sum += i;
+  }
+  EXPECT_EQ(sum, 39);
+}
+
+TEST(IRangeTest, BigFirst) {
+  int sum = 0;
+  for (const auto i : folly::irange(11, 10)) {
+    sum += i;
+  }
+  EXPECT_EQ(sum, 0);
+}
+
+TEST(IRangeTest, FirstConvertsBig) {
+  int sum = 0;
+  for (const auto i : folly::irange(-1u, 10u)) {
+    sum += i;
+  }
+  EXPECT_EQ(sum, 0);
+}
