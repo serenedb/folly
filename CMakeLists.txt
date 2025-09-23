@@ -182,6 +182,9 @@ add_library(folly STATIC
   # For Velox compression
   folly/compression/Compression.cpp
 
+  # For IOBufQueue
+  folly/io/IOBufQueue.cpp
+
   # For IOBuf
   folly/memory/SanitizeAddress.cpp
   folly/io/IOBuf.cpp
