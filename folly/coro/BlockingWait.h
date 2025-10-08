@@ -86,7 +86,7 @@ class BlockingWaitPromiseBase {
   folly::AsyncStackFrame& getAsyncFrame() noexcept { return asyncFrame_; }
 
  private:
-  folly::fibers::Baton baton_;
+  folly::Baton<> baton_;
   folly::AsyncStackFrame asyncFrame_;
 };
 

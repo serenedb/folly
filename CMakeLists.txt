@@ -270,6 +270,9 @@ add_library(folly STATIC
   folly/tracing/AsyncStack.cpp
   folly/debugging/symbolizer/SignalHandler.cpp
 
+  # For coroutine
+  folly/coro/detail/Malloc.cpp
+
   # For everything else
   folly/container/detail/F14Table.cpp
   folly/detail/SplitStringSimd.cpp
