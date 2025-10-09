@@ -144,7 +144,7 @@ include(FollyFunctions)
 include(FollyConfigChecks)
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/CMake/folly-config.h.cmake
-  ${CMAKE_CURRENT_SOURCE_DIR}/folly/folly-config.h
+  ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
 )
 
 add_library(folly_target_specific INTERFACE)
@@ -299,6 +299,7 @@ add_library(folly STATIC
 )
 target_include_directories(folly SYSTEM
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+  PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
 )
 target_link_libraries(folly
   PUBLIC Boost::headers
