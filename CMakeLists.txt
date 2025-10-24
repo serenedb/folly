@@ -312,7 +312,7 @@ target_link_libraries(folly
   PUBLIC gflags::gflags
   PUBLIC glog::glog
   PUBLIC FastFloat::fast_float
-  PRIVATE absl::strings
+  PUBLIC fmt::fmt
   PUBLIC double-conversion::double-conversion
   PRIVATE folly_target_specific
 )
