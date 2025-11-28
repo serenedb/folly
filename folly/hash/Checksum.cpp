@@ -294,7 +294,6 @@ uint32_t crc32c_combine(uint32_t crc1, uint32_t crc2, size_t crc2len) {
     return detail::crc32c_combine_sw(crc1, crc2, crc2len - len);
   }
 }
-*/
 
 uint32_t crc32c_combine_seed(
     uint32_t crc1, uint32_t crc2, size_t crc2len, uint32_t startingChecksum) {
@@ -318,5 +317,6 @@ uint32_t crc32c_combine_seed(
   result ^= startingChecksum;
   return result;
 }
+*/
 
 } // namespace folly
