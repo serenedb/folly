@@ -147,6 +147,19 @@ include(FollyFunctions)
 
 #include(folly-deps) # Find the required packages
 include(FollyConfigChecks)
+
+if (FOLLY_HAVE_DWARF)
+  find_package(LibDwarf)
+endif ()
+
+if (LIBDWARF_FOUND)
+  list(APPEND LIBDWARF_LIBRARIES unwind-headers)
+else ()
+  set(FOLLY_HAVE_DWARF OFF)
+  set(LIBDWARF_INCLUDE_DIRS)
+  set(LIBDWARF_LIBRARIES)
+endif ()
+
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/CMake/folly-config.h.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
@@ -305,6 +318,7 @@ add_library(folly STATIC
 target_include_directories(folly SYSTEM
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
   PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
+  PUBLIC ${LIBDWARF_INCLUDE_DIRS}
 )
 target_link_libraries(folly
   PUBLIC Boost::headers
@@ -314,7 +328,26 @@ target_link_libraries(folly
   PUBLIC fmt::fmt
   PUBLIC double-conversion::double-conversion
   PRIVATE folly_target_specific
+  PUBLIC ${LIBDWARF_LIBRARIES}
 )
+
+if (FOLLY_HAVE_DWARF)
+  # For symbolizer
+  target_sources(folly PRIVATE
+    folly/debugging/symbolizer/Symbolizer.cpp
+    folly/debugging/symbolizer/SymbolizePrinter.cpp
+    folly/debugging/symbolizer/SymbolizedFrame.cpp
+    folly/debugging/symbolizer/detail/Debug.cpp
+    folly/debugging/symbolizer/Elf.cpp
+    folly/debugging/symbolizer/ElfCache.cpp
+    folly/debugging/symbolizer/Dwarf.cpp
+    folly/debugging/symbolizer/DwarfImpl.cpp
+    folly/debugging/symbolizer/DwarfLineNumberVM.cpp
+    folly/debugging/symbolizer/DwarfSection.cpp
+    folly/debugging/symbolizer/DwarfUtil.cpp
+  )
+endif ()
+
 add_library(Folly::folly ALIAS folly)
 
 return()
