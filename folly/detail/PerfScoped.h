@@ -23,7 +23,7 @@
 namespace folly {
 namespace detail {
 
-#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__linux__) && !defined(__ANDROID__) && 0
 #define FOLLY_PERF_IS_SUPPORTED 1
 #else
 #define FOLLY_PERF_IS_SUPPORTED 0
