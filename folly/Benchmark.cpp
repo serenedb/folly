@@ -267,7 +267,7 @@ static std::pair<double, UserCounters> runBenchmarkGetNSPerIterationEstimate(
   size_t actualTrials = 0;
   const unsigned int estimateCount = to_integral(max(1.0, 5e+7 / estPerIter));
   std::vector<TrialResultType> trialResults(FLAGS_bm_max_trials);
-  const auto maxRunTime = seconds(max(5, FLAGS_bm_max_secs));
+  const auto maxRunTime = seconds(max<int>(5, FLAGS_bm_max_secs));
   auto globalStart = high_resolution_clock::now();
 
   // Run benchmark up to trial times with at least 0.5 sec each
@@ -726,12 +726,14 @@ BenchmarksToRun selectBenchmarksToRun(
 
   res.benchmarks.reserve(benchmarks.size());
 
-  if (!FLAGS_bm_regex.empty()) {
-    bmRegex.emplace(FLAGS_bm_regex);
+  std::string bmRegexStr = FLAGS_bm_regex;
+  if (!bmRegexStr.empty()) {
+    bmRegex.emplace(bmRegexStr);
   }
 
-  if (!FLAGS_bm_file_regex.empty()) {
-    bmFileRegex.emplace(FLAGS_bm_file_regex);
+  std::string bmFileRegexStr = FLAGS_bm_file_regex;
+  if (!bmFileRegexStr.empty()) {
+    bmFileRegex.emplace(bmFileRegexStr);
   }
 
   for (auto& bm : benchmarks) {
@@ -772,7 +774,7 @@ void maybeRunWarmUpIteration(const BenchmarksToRun& toRun) {
   bool shouldRun = FLAGS_bm_warm_up_iteration;
 
 #if FOLLY_PERF_IS_SUPPORTED
-  shouldRun = shouldRun || !FLAGS_bm_perf_args.empty();
+  shouldRun = shouldRun || !std::string(FLAGS_bm_perf_args).empty();
 #endif
 
   if (!shouldRun) {
@@ -947,7 +949,7 @@ PerfScoped BenchmarkingStateBase::doSetUpPerfScoped(
 PerfScoped BenchmarkingStateBase::setUpPerfScoped() const {
   std::vector<std::string> perfArgs;
 #if FOLLY_PERF_IS_SUPPORTED
-  folly::split(' ', FLAGS_bm_perf_args, perfArgs, true);
+  folly::split(' ', std::string(FLAGS_bm_perf_args), perfArgs, true);
 #endif
   if (perfArgs.empty()) {
     return PerfScoped{};
@@ -998,7 +1000,7 @@ void runBenchmarks() {
   if (FLAGS_bm_min_iters >= FLAGS_bm_max_iters) {
     std::cerr << "WARNING: bm_min_iters > bm_max_iters; increasing the max"
               << std::endl;
-    FLAGS_bm_max_iters = FLAGS_bm_min_iters + 1;
+    absl::SetFlag<int64_t>(&FLAGS_bm_max_iters, FLAGS_bm_min_iters + 1);
   }
 
   checkRunMode();
@@ -1009,7 +1011,7 @@ void runBenchmarks() {
   // PLEASE KEEP QUIET. MEASUREMENTS IN PROGRESS.
 
   const bool shouldPrintInline =
-      FLAGS_bm_relative_to.empty() && !FLAGS_json && !useCounter;
+      std::string(FLAGS_bm_relative_to).empty() && !FLAGS_json && !useCounter;
   auto benchmarkResults =
       state.runBenchmarksWithPrinter(shouldPrintInline ? &printer : nullptr);
 
@@ -1017,7 +1019,7 @@ void runBenchmarks() {
 
   if (FLAGS_json) {
     printBenchmarkResultsAsJson(benchmarkResults.second);
-  } else if (!FLAGS_bm_relative_to.empty()) {
+  } else if (!std::string(FLAGS_bm_relative_to).empty()) {
     printResultComparison(
         resultsFromFile(FLAGS_bm_relative_to), benchmarkResults.second);
   } else if (!shouldPrintInline) {
@@ -1026,7 +1028,7 @@ void runBenchmarks() {
     printer.separator('=');
   }
 
-  if (!FLAGS_bm_json_verbose.empty()) {
+  if (!std::string(FLAGS_bm_json_verbose).empty()) {
     writeResultsToFile(benchmarkResults.second, FLAGS_bm_json_verbose);
   }
 
