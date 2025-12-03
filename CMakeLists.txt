@@ -243,6 +243,7 @@ add_library(folly STATIC
   folly/Demangle.cpp
   folly/Singleton.cpp
   folly/SharedMutex.cpp
+  folly/MicroLock.cpp
 
   # For futures
   folly/futures/detail/Core.cpp
@@ -299,6 +300,10 @@ add_library(folly STATIC
   # For coroutine
   folly/coro/detail/Malloc.cpp
   folly/memory/Malloc.cpp
+
+  # For benchmark
+  folly/Benchmark.cpp
+  folly/detail/PerfScoped.cpp
 
   # For everything else
   folly/container/detail/F14Table.cpp
