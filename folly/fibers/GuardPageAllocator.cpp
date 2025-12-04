@@ -31,6 +31,7 @@
 #include <folly/Synchronized.h>
 #include <folly/portability/SysMman.h>
 #include <folly/portability/Unistd.h>
+#include <folly/synchronization/CallOnce.h>
 
 namespace folly {
 namespace fibers {
@@ -249,8 +250,8 @@ bool isInJVM() {
 }
 
 void installSignalHandler() {
-  static std::once_flag onceFlag;
-  std::call_once(onceFlag, []() {
+  static folly::once_flag onceFlag;
+  folly::call_once(onceFlag, []() {
     if (isInJVM()) {
       // Don't install signal handler, since JVM internal signal handler doesn't
       // work with SA_ONSTACK
