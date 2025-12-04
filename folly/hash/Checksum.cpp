@@ -122,8 +122,9 @@ bool crc32c_hw_supported_avx512() {
 }
 
 bool crc32c_hw_supported_neon() {
-  static bool has_neon = has_neon_crc32c_v3s4x2e_v2();
-  return has_neon;
+  // static bool has_neon = has_neon_crc32c_v3s4x2e_v2();
+  // return has_neon;
+  return false;
 }
 
 bool crc32_hw_supported_neon_eor3_sha3() {
@@ -132,8 +133,9 @@ bool crc32_hw_supported_neon_eor3_sha3() {
 }
 
 bool crc32c_hw_supported_neon_eor3_sha3() {
-  static bool has_neon_eor3 = has_neon_eor3_crc32c_v8s2x4_s3();
-  return has_neon_eor3;
+  // static bool has_neon_eor3 = has_neon_eor3_crc32c_v8s2x4_s3();
+  // return has_neon_eor3;
+  return false;
 }
 
 bool crc32_hw_supported() {
