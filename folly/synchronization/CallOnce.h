@@ -23,13 +23,14 @@
 #include <atomic>
 #include <utility>
 
+#include <absl/base/call_once.h>
 #include <folly/Likely.h>
 #include <folly/MicroLock.h>
 #include <folly/Portability.h>
 #include <folly/SharedMutex.h>
 #include <folly/functional/Invoke.h>
 
-namespace folly {
+namespace folly::old {
 
 /**
  * The flag template to be used with call_once. Parameterizable by the mutex
@@ -259,5 +260,15 @@ static_assert(
  * mimic: std::once_flag
  */
 using once_flag = basic_once_flag<SharedMutex>;
+
+} // namespace folly::old
+namespace folly {
+
+using once_flag = absl::once_flag;
+
+template <typename... Args>
+void call_once(Args&&... args) {
+  absl::call_once(std::forward<Args>(args)...);
+}
 
 } // namespace folly
