@@ -183,22 +183,25 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
 )
 
+add_library(folly_headers INTERFACE)
+target_include_directories(folly_headers
+  INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
+  INTERFACE ${CMAKE_CURRENT_BINARY_DIR}
+  INTERFACE ${LIBDWARF_INCLUDE_DIRS}
+)
+
 add_library(folly_target_specific INTERFACE)
 
 add_library(folly_avx2 STATIC
   folly/external/fast-crc32/sse_crc32c_v8s3x3.cpp
 )
-target_include_directories(folly_avx2 SYSTEM
-  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-)
+target_link_libraries(folly_avx2 PRIVATE folly_headers)
 
 add_library(folly_avx512 STATIC
   folly/external/fast-crc32/avx512_crc32c_v8s3x4.cpp
   folly/detail/TrapOnAvx512.cpp
 )
-target_include_directories(folly_avx512 SYSTEM
-  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-)
+target_link_libraries(folly_avx512 PRIVATE folly_headers)
 target_compile_options(folly_avx512 PRIVATE
   -mavx512f
   -mavx512vl
@@ -208,19 +211,35 @@ target_compile_options(folly_avx512 PRIVATE
 add_library(folly_neon1 STATIC
   folly/external/fast-crc32/neon_crc32c_v3s4x2e_v2.cpp
 )
-target_include_directories(folly_neon1 SYSTEM
-  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-)
+target_link_libraries(folly_avx512 PRIVATE folly_headers)
 
 add_library(folly_neon2 STATIC
   folly/external/fast-crc32/neon_eor3_crc32c_v8s2x4_s3.cpp
 )
-target_include_directories(folly_neon2 SYSTEM
-  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-)
+target_link_libraries(folly_neon2 PRIVATE folly_headers)
 target_compile_options(folly_neon2 PRIVATE
   -march=armv8.2-a+crypto+crc+sha3
 )
+
+add_library(folly_neon_crc32 STATIC
+  folly/external/nvidia/hash/Checksum.cpp
+)
+target_link_libraries(folly_neon_crc32 PRIVATE folly_headers)
+
+add_library(folly_neon2_crc32 STATIC
+  folly/external/fast-crc32/neon_eor3_crc32_v9s3x2e_s3.cpp
+)
+target_link_libraries(folly_neon2_crc32 PRIVATE folly_headers)
+target_compile_options(folly_neon2_crc32 PRIVATE
+  -march=armv8.2-a+crypto+crc+sha3
+)
+
+if (IS_AARCH64_ARCH)
+  target_link_libraries(folly_target_specific INTERFACE 
+    folly_neon_crc32
+    folly_neon2_crc32
+  )
+endif ()
 
 add_library(folly STATIC
   # For Velox compression
@@ -338,11 +357,6 @@ add_library(folly STATIC
   folly/ScopeGuard.cpp
   folly/String.cpp
 )
-target_include_directories(folly SYSTEM
-  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-  PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
-  PUBLIC ${LIBDWARF_INCLUDE_DIRS}
-)
 target_link_libraries(folly
   PUBLIC Boost::headers
   PUBLIC gflags::gflags
@@ -350,6 +364,7 @@ target_link_libraries(folly
   PUBLIC FastFloat::fast_float
   PUBLIC fmt::fmt
   PUBLIC double-conversion::double-conversion
+  PUBLIC folly_headers
   PRIVATE folly_target_specific
   PUBLIC ${LIBDWARF_LIBRARIES}
 )
