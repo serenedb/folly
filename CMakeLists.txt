@@ -338,6 +338,7 @@ add_library(folly STATIC
   folly/Random.cpp
   folly/ScopeGuard.cpp
   folly/String.cpp
+  folly/system/HardwareConcurrency.cpp
 )
 target_link_libraries(folly
   PUBLIC Boost::headers
