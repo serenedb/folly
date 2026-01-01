@@ -283,8 +283,8 @@ add_library(folly STATIC
   folly/MicroLock.cpp
 
   # For futures
-  folly/futures/detail/Core.cpp
-  folly/futures/Future.cpp
+  # folly/futures/detail/Core.cpp
+  # folly/futures/Future.cpp
   folly/futures/HeapTimekeeper.cpp
   folly/system/ThreadName.cpp
 
