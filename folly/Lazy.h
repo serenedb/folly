@@ -117,6 +117,10 @@ struct Lazy {
     return *value_;
   }
 
+  void reset() const noexcept {
+    value_.reset();
+  }
+
  private:
   void ensure_initialized() const {
     if (!value_) {
